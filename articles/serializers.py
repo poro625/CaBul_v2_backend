@@ -18,3 +18,14 @@ class FeedSerializer(serializers.ModelSerializer):
         model = Feed
         fields = '__all__'
 
+class FeedListSerializer(serializers.ModelSerializer):
+    
+    like_count= serializers.SerializerMethodField()
+
+
+    def get_like_count(self, obj):
+        return obj.like.count()
+
+    class Meta:
+        model = Feed
+        fields='__all__'
