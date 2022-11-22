@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from django.db.models.query_utils import Q
 from articles.models import Comment,Feed
 
-from articles.serializers import FeedSerializer
+from articles.serializers import FeedSerializer, FeedListSerializer
 from rest_framework import generics
 from rest_framework import filters
 
@@ -13,6 +13,11 @@ from rest_framework import filters
 # Create your views here.  
 
 class ArticlesFeedView(APIView):
+    
+    def get(self, request):
+        articles = Feed.objects.all()
+        serializer = FeedListSerializer(articles, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         serializer = FeedSerializer(data=request.data)
@@ -23,6 +28,11 @@ class ArticlesFeedView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 class ArticlesFeedDetailView(APIView):
+    
+    def get(self, request, feed_id):
+        feed = get_object_or_404(Feed, id=feed_id)
+        serializer = FeedSerializer(feed)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, feed_id):
         feed = get_object_or_404(Feed, id= feed_id)
