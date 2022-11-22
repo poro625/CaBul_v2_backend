@@ -33,8 +33,8 @@ class User(AbstractBaseUser):
         max_length=255,
         unique=True,
     )
+    name = models.CharField(max_length=20)
     nickname = models.CharField(max_length=16)
-    username = models.CharField(max_length=20)
     follow = models.ManyToManyField('self', symmetrical=False, related_name='followee', blank=True)
     profile_image = models.ImageField(blank=True, upload_to="profile_images/")
     is_active = models.BooleanField(default=True)
