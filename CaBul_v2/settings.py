@@ -26,6 +26,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'taggit.apps.TaggitAppConfig', # 테그
+    'taggit_templatetags2', # 테그
     "users",
     "articles",
 ]
@@ -90,7 +92,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "ko-kr"
 
-TIME_ZONE = "Asis/Seoul"
+TIME_ZONE = "Asia/Seoul"
 
 USE_I18N = True
 
