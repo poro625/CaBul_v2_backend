@@ -21,9 +21,10 @@ class ArticlesFeedLikeView(APIView): # Feed 좋아요
             feed.like.add(request.user)
             return Response("좋아요했습니다", status=status.HTTP_200_OK)
 
-class ArticlesSearchView(generics.ListAPIView): #검색
+class ArticlesSearchView(generics.ListAPIView): 
+    queryset = Feed.objects.all()
     serializer_class = ArticleSerializer
 
     filter_backends = [filters.SearchFilter]
     # 검색 키워드를 지정했을 때, 매칭을 시도할 필드
-    search_fields = ["title","description"]
+    search_fields = ["title","user"]
