@@ -9,7 +9,7 @@ from rest_framework import filters
 from rest_framework import permissions
 from articles.serializers import ArticleSerializer
 
-class ArticlesMovieLikeView(APIView): # 좋아요
+class ArticlesFeedLikeView(APIView): # 좋아요
     permission_classes = [permissions.IsAuthenticated]
     def post(self, request,movie_id ):
         article = get_object_or_404(Feed, id=movie_id)
