@@ -10,6 +10,15 @@ from rest_framework.permissions import AllowAny
 from allauth.account.models import EmailConfirmation, EmailConfirmationHMAC
 
 
+class UserView(APIView):
+     
+    def delete(self, request): # 회원탈퇴
+        if request.user.is_authenticated:
+            request.user.delete()
+            return Response("탈퇴되었습니다!", status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response("권한이 없습니다!", status=status.HTTP_403_FORBIDDEN)
+
 
 
 class ConfirmEmailView(APIView): # 이메일 인증
