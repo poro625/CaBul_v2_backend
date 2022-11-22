@@ -7,7 +7,7 @@ from articles.models import Feed
 from rest_framework import generics
 from rest_framework import filters
 from rest_framework import permissions
-
+from articles.serializers import ArticleSerializer
 
 class ArticlesMovieLikeView(APIView): # 좋아요
     permission_classes = [permissions.IsAuthenticated]
