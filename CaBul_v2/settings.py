@@ -1,9 +1,16 @@
 from pathlib import Path
 from datetime import timedelta
 import os
+import json
+import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+ROOT_DIR = os.path.dirname(BASE_DIR)
+SECRET_BASE_FILE = os.path.join(BASE_DIR, 'secrets.json')
+secrets = json.loads(open(SECRET_BASE_FILE).read())
+for key, value in secrets.items():
+    setattr(sys.modules[__name__], key, value)
 
 
 # Quick-start development settings - unsuitable for production
@@ -27,14 +34,20 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
     'django.contrib.sites',
     "corsheaders",
     'rest_framework',  # rest_framework
     'rest_framework.authtoken',
     'rest_framework_simplejwt', # jwt
+    'rest_framework_simplejwt.token_blacklist',
+
     'dj_rest_auth',
     'dj_rest_auth.registration',
-    
+
+    'taggit.apps.TaggitAppConfig', # 테그
+    'taggit_templatetags2', # 테그
+
     "users",
     "articles",
     'recommend',
@@ -81,6 +94,7 @@ REST_FRAMEWORK = {  # jwt
     'DEFAULT_AUTHENTICATION_CLASSES': (
 
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
     )
 }
 
@@ -209,6 +223,8 @@ STATIC_URL = "/static/"
 MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = "/media/"
 
+
 ACCOUNT_ADAPTER = 'users.adapters.CustomAccountAdapter'
 
 CORS_ALLOW_ALL_ORIGINS = True
+
