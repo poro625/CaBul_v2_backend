@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
     'django.contrib.sites',
     "corsheaders",
     'rest_framework',  # rest_framework
@@ -34,7 +35,10 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt', # jwt
     'dj_rest_auth',
     'dj_rest_auth.registration',
-    
+
+    'taggit.apps.TaggitAppConfig', # 테그
+    'taggit_templatetags2', # 테그
+
     "users",
     "articles",
     'recommend',
@@ -209,6 +213,8 @@ STATIC_URL = "/static/"
 MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = "/media/"
 
+
 ACCOUNT_ADAPTER = 'users.adapters.CustomAccountAdapter'
 
 CORS_ALLOW_ALL_ORIGINS = True
+
