@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
     'django.contrib.sites',
     "corsheaders",
     'rest_framework',  # rest_framework
@@ -35,6 +36,9 @@ INSTALLED_APPS = [
     'dj_rest_auth',
     'dj_rest_auth.registration',
     
+    'taggit.apps.TaggitAppConfig', # 테그
+    'taggit_templatetags2', # 테그
+
     "users",
     "articles",
     'recommend',
