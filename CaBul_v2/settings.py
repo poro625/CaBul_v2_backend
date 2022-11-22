@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt', # jwt
     'dj_rest_auth',
     'dj_rest_auth.registration',
-    
+
     'taggit.apps.TaggitAppConfig', # 테그
     'taggit_templatetags2', # 테그
 
