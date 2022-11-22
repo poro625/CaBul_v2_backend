@@ -4,6 +4,7 @@ from users.models import User
 
 
 class ArticleSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Feed
         fields='__all__'
