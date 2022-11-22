@@ -5,10 +5,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework import status
 from articles.models import Comment,Feed
 from articles.serializers import FeedCommentSerializer
-# Create your views here.  
 
-def ArticlesView():
-    pass
 class FeedCommentView(APIView): #댓글 (작성)(성창남)
 
     def post(self, request,feed_id):
@@ -23,7 +20,7 @@ class FeedCommentDetailView(APIView):  #댓글(수정,삭제)(성창남)
 
     def put(self, request, feed_id, comment_id):
 
-        comment = get_object_or_404(Comment, id= comment_id)
+        comment = get_object_or_404(Comment, id=comment_id)
         if request.user == comment.user:
             serializer = FeedCommentSerializer(comment, data=request.data)
             if serializer.is_valid():
