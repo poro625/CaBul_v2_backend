@@ -8,6 +8,7 @@ from django.http import HttpResponseRedirect
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from allauth.account.models import EmailConfirmation, EmailConfirmationHMAC
+from users.serializers import UserProfileSerializer, UserUpdateSerializer
 
 
 class UserView(APIView):
@@ -19,6 +20,22 @@ class UserView(APIView):
         else:
             return Response("권한이 없습니다!", status=status.HTTP_403_FORBIDDEN)
 
+
+class ProfileView(APIView):  # 회원정보 조회
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request, user_id):
+        user = get_object_or_404(User, id=user_id)
+        serializer = UserProfileSerializer(user)  
+        return Response(serializer.data)
+    
+    def put(self, request, user_id): # 회원정보 수정
+        user = User.objects.get(id=user_id)
+        serializer = UserUpdateSerializer(user, data=request.data, partial=True, context={"request": request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ConfirmEmailView(APIView): # 이메일 인증
