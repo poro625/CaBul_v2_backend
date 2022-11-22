@@ -24,10 +24,10 @@ class ArticlesFeedView(APIView):
         
 class ArticlesFeedDetailView(APIView):
 
-    def put(self, request, feed_id, comment_id):
-        comment = get_object_or_404(Comment, id= comment_id)
-        if request.user == comment.user:
-            serializer = FeedSerializer(comment, data=request.data)
+    def put(self, request, feed_id):
+        feed = get_object_or_404(Feed, id= feed_id)
+        if request.user == feed.user:
+            serializer = FeedSerializer(feed, data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -37,10 +37,10 @@ class ArticlesFeedDetailView(APIView):
             return Response("권한이 없습니다!", status=status.HTTP_403_FORBIDDEN)
 
 
-    def delete(self, request, feed_id, comment_id):
-        comment = get_object_or_404(Comment, id= comment_id)
-        if request.user == comment.user:
-            comment.delete()
+    def delete(self, request, feed_id):
+        feed = get_object_or_404(Feed, id= feed_id)
+        if request.user == feed.user:
+            feed.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response("권한이 없습니다!", status=status.HTTP_403_FORBIDDEN)
