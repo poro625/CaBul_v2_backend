@@ -6,11 +6,11 @@ from articles.models import Feed, Comment
 admin.site.register(Feed)
 admin.site.register(Comment)
 class PostAdmin(admin.ModelAdmin):
-    # list_display = ('id','title','modify_dt')
-    list_display = ('id','title','modify_dt','tag_list') # 'tag_list' 추가
+    # list_display = ('title','content','category')
+    list_display = ('title','content','category') # 'title','content','category' 추가
 
     list_filter = ('modify_dt',)
-    search_fields = ('title','content') # 검색 박스 표시, title, content 칼럼에서 검색
+    search_fields = ('title','content','category') # 검색 박스 표시, title, content, category 칼럼에서 검색
     prepopulated_fields = {'slug': ('title',)} # title 필드를 사용해 미리 채워지도록
 
     # add two methods about tag
