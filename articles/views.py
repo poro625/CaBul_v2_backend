@@ -9,7 +9,7 @@ from articles.models import Feed, Comment
 from rest_framework import generics
 from rest_framework import filters
 from rest_framework import permissions
-from articles.serializers import ArticleSerializer, FeedSerializer, FeedListSerializer, FeedCommentSerializer, CategoryAiSerializer
+from articles.serializers import ArticleSerializer, FeedSerializer, FeedListSerializer, FeedCommentSerializer
 from django.db.models.query_utils import Q
 import torch
 
