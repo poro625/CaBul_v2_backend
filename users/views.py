@@ -18,7 +18,7 @@ from allauth.socialaccount.providers.kakao import views as kakao_view
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from rest_framework.permissions import AllowAny
 from allauth.account.models import EmailConfirmation, EmailConfirmationHMAC
-from users.serializers import UserProfileSerializer, UserUpdateSerializer
+from users.serializers import UserProfileSerializer, UserUpdateSerializer, PasswordChangeSerializer
 from django.conf import settings
 from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.providers.kakao import views as kakao_view
@@ -67,6 +67,18 @@ class ProfileView(APIView):  # 회원정보 조회, 수정 View
 
 class PasswordChangeView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+    
+    def put(self, request, user_id): # 회원정보 수정
+        user = get_object_or_404(User, id=user_id)
+        if request.user == user:
+            serializer = PasswordChangeSerializer(user, data=request.data, context={"request": request})
+            if serializer.is_valid():
+                serializer.save()
+                return Response({"message":"비밀번호가 변경되었습니다!"}, status=status.HTTP_200_OK)
+        
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"message":"권한이 없습니다!"}, status=status.HTTP_403_FORBIDDEN)
 
 
 class ConfirmEmailView(APIView): # 이메일 인증 View
