@@ -15,10 +15,12 @@ import cv2
 from PIL import Image
 from django.core.files.uploadedfile import InMemoryUploadedFile
 import numpy as np
-import sys
+import sys, os
 import io
 from django.forms.models import model_to_dict
 import random
+import uuid
+from CaBul_v2.settings import MEDIA_ROOT
 
 
 
@@ -40,7 +42,9 @@ def upload_category(img, serializer):
 
 def transform(img, net, serializer):
     feed = Feed.objects.get(id=serializer['id'])
-    now = datetime.now()
+    file_name = uuid.uuid4()
+    # date = datetime.now()
+    # now = date.strptime('%Y%m%d')
     
     data = cv2.imread((f'.{img}'))
     
@@ -68,7 +72,7 @@ def transform(img, net, serializer):
     output = output.astype('uint8')
     output = Image.fromarray(output)
     # output_io = io.BytesIO()
-    transfer_image = f"transfer_feed_images/{feed.user.nickname}_{now}.jpg"
+    transfer_image = f"transfer_feed_images/{file_name}.jpg"
     output.save(f"./media/{transfer_image}", "JPEG")
     feed.transfer_image = transfer_image
     feed.save()
@@ -108,13 +112,12 @@ class ArticlesFeedView(APIView):
     #     return Response(painting_dict, status=status.HTTP_200_OK)
 
     def post(self, request):
-        serializer = FeedSerializer(data=request.data)
         
         if serializer.is_valid():
             serializer.save(user=request.user)
             img = serializer.data["original_image"]
             upload_category(img, serializer.data)
-            model_list = ['articles/composition_vii.t7', 'articles/candy.t7', 'articles/feathers.t7', 'articles/la_muse.t7', 'articles/masaic.t7', 'articles/starry_night.t7', 'articles/the_scream.t7', 'articles/the_wave.t7', 'articles/udnie.t7']
+            model_list = ['articles/composition_vii.t7', 'articles/candy.t7', 'articles/feathers.t7', 'articles/la_muse.t7', 'articles/mosaic.t7', 'articles/starry_night.t7', 'articles/the_scream.t7', 'articles/the_wave.t7', 'articles/udnie.t7']
             random.shuffle(model_list)
             net = cv2.dnn.readNetFromTorch(model_list[0])
             transform(img, net, serializer.data)
