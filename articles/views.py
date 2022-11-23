@@ -43,6 +43,68 @@ class ArticlesFeedView(APIView): # 게시글 전체보기, 등록 View
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
+        
+class ArticlesFeedDetailView(APIView): #게시글 상세조회, 수정, 삭제 View
+    
+    def get(self, request, feed_id): # 게시글 상세 조회
+        feed = get_object_or_404(Feed, id=feed_id)
+        serializer = FeedDetailSerializer(feed)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, feed_id): # 게시글 수정
+        feed = get_object_or_404(Feed, id= feed_id)
+        if request.user == feed.user:
+            serializer = FeedSerializer(feed, data=request.data)
+            if serializer.is_valid():
+                serializer.save(user=request.user)
+                img = serializer.data["original_image"]
+                upload_category(img, serializer.data)
+                
+                model_list = ['articles/sample/composition_vii.t7', 'articles/sample/candy.t7', 'articles/sample/feathers.t7', 'articles/sample/la_muse.t7', 'articles/sample/mosaic.t7', 'articles/sample/starry_night.t7', 'articles/sample/the_scream.t7', 'articles/sample/the_wave.t7', 'articles/sample/udnie.t7']
+                random.shuffle(model_list)
+                
+                net = cv2.dnn.readNetFromTorch(model_list[0])
+                
+                transform(img, net, serializer.data)
+                
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response("권한이 없습니다!", status=status.HTTP_403_FORBIDDEN)
+
+    def delete(self, request, feed_id): # 게시글 삭제
+        feed = get_object_or_404(Feed, id= feed_id)
+        if request.user == feed.user:
+            feed.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response("권한이 없습니다!", status=status.HTTP_403_FORBIDDEN)
+class ArticlesFeedLikeView(APIView): # Feed 좋아요 View
+    
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self, request,feed_id ):
+        feed = get_object_or_404(Feed, id=feed_id)
+        if request.user in feed.like.all():
+            feed.like.remove(request.user)
+            return Response("좋아요취소했습니다", status=status.HTTP_200_OK)
+        else:
+            feed.like.add(request.user)
+            return Response("좋아요했습니다", status=status.HTTP_200_OK)
+        
+
+class ArticlesSearchView(generics.ListAPIView): # 게시글 검색 View
+    queryset = Feed.objects.all()
+    serializer_class = ArticleSerializer
+
+    filter_backends = [filters.SearchFilter]
+    # 검색 키워드를 지정했을 때, 매칭을 시도할 필드
+    search_fields = ["title"]
+
+class TagView(generics.ListAPIView): # 게시글 Tag View
+    queryset = TaggedFeed.objects.all()
+    serializer_class = TagSerializer
+        
 class FeedCommentView(APIView): # 댓글 등록 View (성창남)
 
     def post(self, request, feed_id): # 댓글 등록
@@ -52,7 +114,6 @@ class FeedCommentView(APIView): # 댓글 등록 View (성창남)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
         
             
 class FeedCommentDetailView(APIView):  #댓글(수정,삭제) View (성창남)
@@ -77,56 +138,4 @@ class FeedCommentDetailView(APIView):  #댓글(수정,삭제) View (성창남)
         else:
             return Response("권한이 없습니다!", status=status.HTTP_403_FORBIDDEN)     
         
-
-class ArticlesFeedDetailView(APIView): #게시글 상세조회, 수정, 삭제 View
-    
-    def get(self, request, feed_id): # 게시글 상세 조회
-        feed = get_object_or_404(Feed, id=feed_id)
-        serializer = FeedDetailSerializer(feed)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def put(self, request, feed_id): # 게시글 수정
-        feed = get_object_or_404(Feed, id= feed_id)
-        if request.user == feed.user:
-            serializer = FeedSerializer(feed, data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response("권한이 없습니다!", status=status.HTTP_403_FORBIDDEN)
-
-    def delete(self, request, feed_id): # 게시글 삭제
-        feed = get_object_or_404(Feed, id= feed_id)
-        if request.user == feed.user:
-            feed.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        else:
-            return Response("권한이 없습니다!", status=status.HTTP_403_FORBIDDEN)
-        
-
-class ArticlesFeedLikeView(APIView): # Feed 좋아요 View
-    permission_classes = [permissions.IsAuthenticated]
-    def post(self, request,feed_id ):
-        feed = get_object_or_404(Feed, id=feed_id)
-        if request.user in feed.like.all():
-            feed.like.remove(request.user)
-            return Response("좋아요취소했습니다", status=status.HTTP_200_OK)
-        else:
-            feed.like.add(request.user)
-            return Response("좋아요했습니다", status=status.HTTP_200_OK)
-        
-
-class ArticlesSearchView(generics.ListAPIView): # 게시글 검색 View
-    queryset = Feed.objects.all()
-    serializer_class = ArticleSerializer
-
-    filter_backends = [filters.SearchFilter]
-    # 검색 키워드를 지정했을 때, 매칭을 시도할 필드
-    search_fields = ["title"]
-
-class TagView(generics.ListAPIView): # 게시글 Tag View
-    queryset = TaggedFeed.objects.all()
-    serializer_class = TagSerializer
     
