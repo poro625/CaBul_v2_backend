@@ -16,10 +16,16 @@ class customRegistrationSerializer(RegisterSerializer):  # dj-rest-auth 회원�
         return data
 
 
-class UserProfileSerializer(serializers.ModelSerializer):  # 프로필 조회
+class UserProfileSerializer(serializers.ModelSerializer):
+    followee = serializers.SlugRelatedField(
+        many=True,
+        read_only=True,
+        slug_field='name'
+     )
+    #   프로필 조회
     class Meta:
         model = User
-        fields=("id","name","nickname","email",)
+        fields=("id","name","nickname","email","followee")
 
 class UserUpdateSerializer(serializers.ModelSerializer):  # 닉네임 변경
     class Meta:
