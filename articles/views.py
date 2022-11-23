@@ -112,3 +112,4 @@ class ArticlesSearchView(generics.ListAPIView):
     filter_backends = [filters.SearchFilter]
     # 검색 키워드를 지정했을 때, 매칭을 시도할 필드
     search_fields = ["title"]
+
