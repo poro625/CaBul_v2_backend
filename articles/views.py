@@ -9,11 +9,27 @@ from articles.models import Feed, Comment
 from rest_framework import generics
 from rest_framework import filters
 from rest_framework import permissions
-from articles.serializers import ArticleSerializer, FeedSerializer, FeedListSerializer, FeedCommentSerializer
+from articles.serializers import ArticleSerializer, FeedSerializer, FeedListSerializer, FeedCommentSerializer, CategoryAiSerializer
 from django.db.models.query_utils import Q
+import torch
 
 
 # Create your views here.
+
+def upload_category(img, serizalizer):
+    feed = Feed.objects.get(id=serizalizer['id'])
+    try:
+        model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
+        imgs = [(f'.{img}')] # batch of images
+        results = model(imgs)
+        category_name = results.pandas().xyxy[0]['name'][0]
+        feed.category = category_name
+        feed.save()
+    except(IndexError):
+        category_name = '카테고리 없음'
+        feed.category = category_name
+        feed.save()
+
 
 class FeedCommentView(APIView): #댓글 (작성)(성창남)
 
@@ -35,8 +51,11 @@ class ArticlesFeedView(APIView):
 
     def post(self, request):
         serializer = FeedSerializer(data=request.data)
+        
         if serializer.is_valid():
             serializer.save(user=request.user)
+            img = serializer.data["original_image"]
+            upload_category(img, serializer.data)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
