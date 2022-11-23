@@ -1,7 +1,8 @@
 from rest_framework import serializers
-from articles.models import Feed, Comment
+from articles.models import Feed, Comment, TaggedFeed
 from users.models import User
-
+from taggit.serializers import (TagListSerializerField,
+                                TaggitSerializer)        #테그
 
 class CommentSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
@@ -59,3 +60,11 @@ class FeedListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Feed
         fields='__all__'
+
+class YourSerializer(TaggitSerializer, serializers.ModelSerializer): #테그
+
+    tags = TagListSerializerField()
+
+    class Meta:
+        model = TaggedFeed
+        fields = '__all__'
