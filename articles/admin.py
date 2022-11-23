@@ -9,7 +9,7 @@ class PostAdmin(admin.ModelAdmin):
     # list_display = ('title','content','category')
     list_display = ('title','content','category') # 'title','content','category' 추가
 
-    list_filter = ('modify_dt',)
+    list_filter = ('title',)
     search_fields = ('title','content','category') # 검색 박스 표시, title, content, category 칼럼에서 검색
     prepopulated_fields = {'slug': ('title',)} # title 필드를 사용해 미리 채워지도록
 
