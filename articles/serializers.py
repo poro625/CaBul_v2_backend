@@ -4,6 +4,17 @@ from users.models import User
 from taggit.serializers import (TagListSerializerField,
                                 TaggitSerializer)        #테그
 
+class CommentListSerializer(serializers.ModelSerializer): # 게시글 댓글을 보기위한 Serializer
+    user = serializers.SerializerMethodField()
+
+    def get_user(self, obj):
+        return obj.user.nickname
+
+    class Meta:
+        model = Comment
+        fields='__all__'
+
+
 class CommentSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
 
@@ -43,6 +54,7 @@ class ArticleSerializer(serializers.ModelSerializer):
         
 class FeedSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
+    comments = CommentListSerializer(source = "comment_set", many=True) # 게시글관련 댓글 보기위한 Serializer 설정
 
     def get_user(self, obj):
         return obj.user.email
@@ -50,6 +62,7 @@ class FeedSerializer(serializers.ModelSerializer):
     class Meta:
         model = Feed
         fields = '__all__'
+
 
 class FeedListSerializer(serializers.ModelSerializer):
     like_count= serializers.SerializerMethodField()
