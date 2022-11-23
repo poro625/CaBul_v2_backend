@@ -13,6 +13,7 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields=('id', 'user', 'content', 'created_at',)
         
+        
 class FeedCommentSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
 
@@ -24,6 +25,7 @@ class FeedCommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields='__all__'
         
+        
 class ArticleDetailSerializer(serializers.ModelSerializer):
     Feed_comment = CommentSerializer(many=True)
 
@@ -33,6 +35,7 @@ class ArticleDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Feed
         fields='__all__'
+        
 
 class ArticleSerializer(serializers.ModelSerializer):
 
@@ -40,15 +43,17 @@ class ArticleSerializer(serializers.ModelSerializer):
         model = Feed
         fields='__all__'
         
+        
 class FeedSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
-
+    
     def get_user(self, obj):
         return obj.user.email
     
     class Meta:
         model = Feed
         fields = '__all__'
+        
 
 class FeedListSerializer(serializers.ModelSerializer):
     like_count= serializers.SerializerMethodField()
