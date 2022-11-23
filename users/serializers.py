@@ -14,8 +14,6 @@ class customRegistrationSerializer(RegisterSerializer):  # dj-rest-auth 회원�
         data['name'] = self.validated_data.get('name', '')
 
         return data
-
-
 class UserProfileSerializer(serializers.ModelSerializer): # user 정보 상세조회 serializer
     followee = serializers.SlugRelatedField(
         many=True,
@@ -30,8 +28,8 @@ class UserProfileSerializer(serializers.ModelSerializer): # user 정보 상세�
 class UserUpdateSerializer(serializers.ModelSerializer):  # 회원정보 변경 serializer
     class Meta:
         model = User
-        fields=("nickname","name", "password")
-        
+        fields=("nickname","name",)
+    
     def update(self, instance, validated_data): # 비밀번호 수정 
         for key, value in validated_data.items():
             if key == "password":
