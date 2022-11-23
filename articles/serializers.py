@@ -25,8 +25,9 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields=('id', 'user', 'content', 'created_at',)
         
-class FeedCommentSerializer(serializers.ModelSerializer):
+class FeedCommentSerializer(serializers.ModelSerializer): #댓글 작성
     user = serializers.SerializerMethodField()
+    tags = TagListSerializerField()
 
     def get_user(self, obj):
         return obj.user.email
@@ -52,10 +53,11 @@ class ArticleSerializer(serializers.ModelSerializer):
         model = Feed
         fields='__all__'
         
-class FeedSerializer(serializers.ModelSerializer):
+class FeedSerializer(serializers.ModelSerializer): #게시글 시리얼라이즈
     user = serializers.SerializerMethodField()
     comments = CommentListSerializer(source = "comment_set", many=True) # 게시글관련 댓글 보기위한 Serializer 설정
-
+    
+    
     def get_user(self, obj):
         return obj.user.email
     
