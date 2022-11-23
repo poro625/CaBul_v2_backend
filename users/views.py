@@ -56,12 +56,15 @@ class ProfileView(APIView):  # 회원정보 조회
     
     def put(self, request, user_id): # 회원정보 수정
         user = User.objects.get(id=user_id)
-        serializer = UserUpdateSerializer(user, data=request.data, partial=True, context={"request": request})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+        if request.user == user:
+            serializer = UserUpdateSerializer(user, data=request.data, partial=True, context={"request": request})
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
         
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response("권한이 없습니다!", status=status.HTTP_403_FORBIDDEN)
 
 
 class ConfirmEmailView(APIView): # 이메일 인증
@@ -91,6 +94,25 @@ class ConfirmEmailView(APIView): # 이메일 인증
         qs = EmailConfirmation.objects.all_valid()
         qs = qs.select_related("email_address__user")
         return qs
+
+class FollowView(APIView):
+    def post (self, request, user_id):
+        you = get_object_or_404(User, id=user_id)
+        me = request.user
+        if me == you:
+            return Response("스스로를 follow 할 수 없습니다")
+        else:
+            if me in you.followee.all():
+                you.followee.remove(me)
+                return Response("unfollow했습니다.", status=status.HTTP_200_OK)
+            else:
+                you.followee.add(me)
+                return Response("follow했습니다.", status=status.HTTP_200_OK)
+
+
+
+
+
 
 
 def kakao_login(request):

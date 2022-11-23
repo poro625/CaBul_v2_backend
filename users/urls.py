@@ -8,6 +8,7 @@ urlpatterns = [
     path('<int:user_id>/', views.ProfileView.as_view(), name='profilw_view'),
     path('dj-rest-auth/', include('dj_rest_auth.urls')),  # 로그인 및 기타 dj-rest-auth 기능
     path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')), #회원가입
+    path('follow/<int:user_id>/', views.FollowView.as_view(),name='follow_view'),
     path('kakao/login/', views.kakao_login, name='kakao_login'),
     path('kakao/callback/', views.kakao_callback, name='kakao_callback'),
     path('kakao/login/finish/', views.KakaoLogin.as_view(), name='kakao_login_todjango'),
@@ -16,5 +17,4 @@ urlpatterns = [
     path('kakao/login', views.kakao_login, name='kakao_login'),
     path('kakao/callback/', views.kakao_callback, name='kakao_callback'),
     path('kakao/login/finish/', views.KakaoLogin.as_view(), name='kakao_login_todjango'),
-
 ]
