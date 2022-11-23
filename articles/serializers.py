@@ -3,6 +3,7 @@ from articles.models import Feed, Comment
 from users.models import User
 
 
+
 class CommentSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
 
@@ -46,9 +47,12 @@ class ArticleSerializer(serializers.ModelSerializer):
         
 class FeedSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
+
     
     def get_user(self, obj):
         return obj.user.email
+    
+
     
     class Meta:
         model = Feed

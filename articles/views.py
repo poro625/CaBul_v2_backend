@@ -19,6 +19,8 @@ import sys
 import io
 from django.forms.models import model_to_dict
 import random
+from uuid import uuid4
+import uuid
 
 
 
@@ -40,7 +42,7 @@ def upload_category(img, serializer):
 
 def transform(img, net, serializer):
     feed = Feed.objects.get(id=serializer['id'])
-    now = datetime.now()
+    now = uuid.uuid4()
     
     data = cv2.imread((f'.{img}'))
     
@@ -84,39 +86,22 @@ class ArticlesFeedView(APIView):
         serializer = FeedListSerializer(articles, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-    # def post(self,request):
-    #     user = request.user
-    #     now = datetime.now()
-    #     model_list = ['articles/composition_vii.t7', 'articles/candy.t7', 'articles/feathers.t7', 'articles/la_muse.t7', 'articles/masaic.t7', 'articles/starry_night.t7', 'articles/the_scream.t7', 'articles/the_wave.t7', 'articles/udnie.t7']
-    #     random.shuffle(model_list)
-    #     output_io = transform(request.data['original_image'], net=cv2.dnn.readNetFromTorch(model_list[0]))
-        
-    #     new_pic= InMemoryUploadedFile(output_io, 'ImageField',f"{user.nickname}:{now}",'JPEG', sys.getsizeof(output_io), None)
-        
-    #     create_feeds = Feed.objects.create(
-    #         user=user,
-    #         title=request.data["title"],
-    #         content=request.data["content"],
-    #         category=request.data["category"],
-    #         original_image=new_pic,
-    #         transfer_image=new_pic,
-    #     )
-        
-    #     painting_dict = model_to_dict(create_feeds)
-    #     painting_dict['original_image'] = painting_dict['original_image'].url
-        
-    #     return Response(painting_dict, status=status.HTTP_200_OK)
 
     def post(self, request):
+        
         serializer = FeedSerializer(data=request.data)
         
         if serializer.is_valid():
+            
             serializer.save(user=request.user)
             img = serializer.data["original_image"]
             upload_category(img, serializer.data)
-            model_list = ['articles/composition_vii.t7', 'articles/candy.t7', 'articles/feathers.t7', 'articles/la_muse.t7', 'articles/masaic.t7', 'articles/starry_night.t7', 'articles/the_scream.t7', 'articles/the_wave.t7', 'articles/udnie.t7']
+            
+            model_list = ['articles/sample/composition_vii.t7', 'articles/sample/candy.t7', 'articles/sample/feathers.t7', 'articles/sample/la_muse.t7', 'articles/sample/mosaic.t7', 'articles/sample/starry_night.t7', 'articles.sample/the_scream.t7', 'articles/sample/the_wave.t7', 'articles/sample/udnie.t7']
             random.shuffle(model_list)
+            
             net = cv2.dnn.readNetFromTorch(model_list[0])
+            
             transform(img, net, serializer.data)
             
             return Response(serializer.data, status=status.HTTP_200_OK)
