@@ -34,7 +34,6 @@ class Feed(models.Model): # 피드
     like = models.ManyToManyField(User, related_name='like_posts', blank=True)
     tags = TaggableManager(through=TaggedFeed, blank=True)
 
-
     def __str__(self):
         return str(self.title)
 
