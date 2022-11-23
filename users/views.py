@@ -92,6 +92,22 @@ class ConfirmEmailView(APIView): # 이메일 인증
         qs = qs.select_related("email_address__user")
         return qs
 
+class FollowView(APIView):
+    def post (self, request, user_id):
+        you = get_object_or_404(User, id=user_id)
+        me = request.user
+        if me in you.followee.all():
+            you.followee.remove(me)
+            return Response("unfollow했습니다.", status=status.HTTP_200_OK)
+        else:
+            you.followee.add(me)
+            return Response("follow했습니다.", status=status.HTTP_200_OK)
+
+
+
+
+
+
 
 def kakao_login(request):
     client_id = os.environ.get("SOCIAL_AUTH_KAKAO_CLIENT_ID")
