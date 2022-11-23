@@ -1,5 +1,5 @@
 
-from django.shortcuts import render
+from datetime import datetime
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
@@ -12,9 +12,16 @@ from rest_framework import permissions
 from articles.serializers import ArticleSerializer, FeedSerializer, FeedListSerializer, FeedCommentSerializer
 from django.db.models.query_utils import Q
 import torch
+import cv2
+from PIL import Image
+from django.core.files.uploadedfile import InMemoryUploadedFile
+import numpy as np
+import sys
+import io
+from django.forms.models import model_to_dict
+import random
 
 
-# Create your views here.
 
 def upload_category(img, serizalizer):
     feed = Feed.objects.get(id=serizalizer['id'])
@@ -31,16 +38,39 @@ def upload_category(img, serizalizer):
         feed.save()
 
 
-class FeedCommentView(APIView): #댓글 (작성)(성창남)
 
-    def post(self, request, feed_id):
-        serializer = FeedCommentSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(user=request.user, feed_id=feed_id)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+def transform(img, net):
+
+    data = img.read()
+    #인코딩
+    encoded_img = np.fromstring(data, dtype = np.uint8)
+    #다시 디코딩
+    img = cv2.imdecode(encoded_img, cv2.IMREAD_COLOR)
+
+    
+    h, w, c = img.shape
+    #500x500으로 크기조정
+    img = cv2.resize(img, dsize=(500, int(h / w * 500)))
+    #모델: 명화로 바꾸는 부분
+    MEAN_VALUE = [103.939, 116.779, 123.680]
+    blob = cv2.dnn.blobFromImage(img, mean=MEAN_VALUE)
+    
+    #어떤 명화로 바꿀지
+    net.setInput(blob)
+    output = net.forward()
+    #아웃풋 크기 조정
+    output = output.squeeze().transpose((1, 2, 0))
+    output += MEAN_VALUE
+    #크기에 맞게 자르고 type을 바꿔줌
+    output = np.clip(output, 0, 255)
+    output = output.astype('uint8')
+    
+    output = Image.fromarray(output)
+    output_io = io.BytesIO()
+    output.save(output_io, format="JPEG")
+    return output_io
+
+
 
 class ArticlesFeedView(APIView):
     
@@ -48,6 +78,29 @@ class ArticlesFeedView(APIView):
         articles = Feed.objects.all()
         serializer = FeedListSerializer(articles, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    # def post(self,request):
+    #     user = request.user
+    #     now = datetime.now()
+    #     model_list = ['articles/composition_vii.t7', 'articles/candy.t7', 'articles/feathers.t7', 'articles/la_muse.t7', 'articles/masaic.t7', 'articles/starry_night.t7', 'articles/the_scream.t7', 'articles/the_wave.t7', 'articles/udnie.t7']
+    #     random.shuffle(model_list)
+    #     output_io = transform(request.data['original_image'], net=cv2.dnn.readNetFromTorch(model_list[0]))
+        
+    #     new_pic= InMemoryUploadedFile(output_io, 'ImageField',f"{user.nickname}:{now}",'JPEG', sys.getsizeof(output_io), None)
+        
+    #     create_feeds = Feed.objects.create(
+    #         user=user,
+    #         title=request.data["title"],
+    #         content=request.data["content"],
+    #         category=request.data["category"],
+    #         original_image=new_pic,
+    #         transfer_image=new_pic,
+    #     )
+        
+    #     painting_dict = model_to_dict(create_feeds)
+    #     painting_dict['original_image'] = painting_dict['original_image'].url
+        
+    #     return Response(painting_dict, status=status.HTTP_200_OK)
 
     def post(self, request):
         serializer = FeedSerializer(data=request.data)
@@ -59,6 +112,17 @@ class ArticlesFeedView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+class FeedCommentView(APIView): #댓글 (작성)(성창남)
+
+    def post(self, request, feed_id):
+        serializer = FeedCommentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user, feed_id=feed_id)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
         
             
 class FeedCommentDetailView(APIView):  #댓글(수정,삭제)(성창남)
