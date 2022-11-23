@@ -34,12 +34,11 @@ class Feed(models.Model): # 피드
     like = models.ManyToManyField(User, related_name='like_posts', blank=True)
     tags = TaggableManager(through=TaggedFeed, blank=True)
 
-
     def __str__(self):
         return str(self.title)
 
 class Comment(models.Model):
-    feed = models.ForeignKey(Feed, on_delete=models.CASCADE, blank=True)
+    feed = models.ForeignKey(Feed, on_delete=models.CASCADE, blank=True, related_name="comment_set")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
