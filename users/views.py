@@ -29,12 +29,15 @@ import requests
 from rest_framework import status
 from json.decoder import JSONDecodeError
 import os
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 BASE_URL = 'http://127.0.0.1:8000/'
 KAKAO_CALLBACK_URI = BASE_URL + 'users/kakao/callback/'
 
 
 class UserDeleteView(APIView): # User 삭제 View
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
      
     def delete(self, request): # 회원탈퇴
         if request.user.is_authenticated:
@@ -46,6 +49,7 @@ class UserDeleteView(APIView): # User 삭제 View
 
 class ProfileView(APIView):  # 회원정보 조회, 수정 View
     permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
     
     def get(self, request, user_id): # 회원정보 상세 조회
         user = get_object_or_404(User, id=user_id)
@@ -67,6 +71,7 @@ class ProfileView(APIView):  # 회원정보 조회, 수정 View
 
 class PasswordChangeView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
     
     def put(self, request, user_id): # 회원정보 수정
         user = get_object_or_404(User, id=user_id)
@@ -110,6 +115,9 @@ class ConfirmEmailView(APIView): # 이메일 인증 View
         return qs
 
 class FollowView(APIView): # follow View
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    
     def post (self, request, user_id):
         you = get_object_or_404(User, id=user_id)
         me = request.user

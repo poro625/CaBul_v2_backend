@@ -10,11 +10,15 @@ from articles.serializers import ArticleSerializer, FeedSerializer, FeedListSeri
 from articles.deep_learning import upload_category, transform
 import cv2
 import random
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 
 
 class ArticlesFeedView(APIView): # 게시글 전체보기, 등록 View
+    
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
     
     def get(self, request): # 게시글 전체 보기
         articles = Feed.objects.all()
@@ -45,6 +49,9 @@ class ArticlesFeedView(APIView): # 게시글 전체보기, 등록 View
             
         
 class ArticlesFeedDetailView(APIView): #게시글 상세조회, 수정, 삭제 View
+    
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
     
     def get(self, request, feed_id): # 게시글 상세 조회
         feed = get_object_or_404(Feed, id=feed_id)
@@ -83,6 +90,9 @@ class ArticlesFeedDetailView(APIView): #게시글 상세조회, 수정, 삭제 V
 class ArticlesFeedLikeView(APIView): # Feed 좋아요 View
     
     permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    
+    permission_classes = [permissions.IsAuthenticated]
     def post(self, request,feed_id ):
         feed = get_object_or_404(Feed, id=feed_id)
         if request.user in feed.like.all():
@@ -94,6 +104,10 @@ class ArticlesFeedLikeView(APIView): # Feed 좋아요 View
         
 
 class ArticlesSearchView(generics.ListAPIView): # 게시글 검색 View
+    
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    
     queryset = Feed.objects.all()
     serializer_class = ArticleSerializer
 
@@ -102,10 +116,17 @@ class ArticlesSearchView(generics.ListAPIView): # 게시글 검색 View
     search_fields = ["title"]
 
 class TagView(generics.ListAPIView): # 게시글 Tag View
+    
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    
     queryset = TaggedFeed.objects.all()
     serializer_class = TagSerializer
         
 class FeedCommentView(APIView): # 댓글 등록 View (성창남)
+    
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
 
     def post(self, request, feed_id): # 댓글 등록
         serializer = FeedCommentSerializer(data=request.data)
@@ -117,6 +138,8 @@ class FeedCommentView(APIView): # 댓글 등록 View (성창남)
         
             
 class FeedCommentDetailView(APIView):  #댓글(수정,삭제) View (성창남)
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
 
     def put(self, request, feed_id, comment_id): # 댓글 수정
         comment = get_object_or_404(Comment, id=comment_id)
