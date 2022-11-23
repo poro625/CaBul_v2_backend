@@ -11,12 +11,15 @@ class customRegistrationSerializer(RegisterSerializer):  # dj-rest-auth 회원�
     nickname = serializers.CharField(max_length=20)
     name = serializers.CharField(max_length=20)
     
+    
     def get_cleaned_data(self):
         data = super().get_cleaned_data()
         data['nickname'] = self.validated_data.get('nickname', '')
         data['name'] = self.validated_data.get('name', '')
 
         return data
+    
+    
 class UserProfileSerializer(serializers.ModelSerializer): # user 정보 상세조회 serializer
     followee = serializers.SlugRelatedField(
         many=True,
@@ -58,14 +61,14 @@ class PasswordChangeSerializer(serializers.ModelSerializer):
         
         current_password = self.context.get("request").user.password
         password = data.get('password')
-        repassword = data.get('password2')
+        password2 = data.get('password2')
         
         #현재 비밀번호와 바꿀 비밀번호 비교
         if check_password(password, current_password):
             raise serializers.ValidationError(detail={"password":"현재 비밀번호와 동일합니다!."})
         
         #비밀번호 일치
-        if password != repassword:
+        if password != password2:
             raise serializers.ValidationError(detail={"password":"비밀번호 확인이 일치하지 않습니다!"})
         
         #비밀번호 유효성 검사
