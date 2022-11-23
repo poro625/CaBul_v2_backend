@@ -15,13 +15,12 @@ import cv2
 from PIL import Image
 from django.core.files.uploadedfile import InMemoryUploadedFile
 import numpy as np
-import sys
+import sys, os
 import io
 from django.forms.models import model_to_dict
 import random
 from uuid import uuid4
 import uuid
-
 
 
 def upload_category(img, serializer):
@@ -70,7 +69,7 @@ def transform(img, net, serializer):
     output = output.astype('uint8')
     output = Image.fromarray(output)
     # output_io = io.BytesIO()
-    transfer_image = f"transfer_feed_images/{feed.user.nickname}_{now}.jpg"
+    transfer_image = f"transfer_feed_images/{file_name}.jpg"
     output.save(f"./media/{transfer_image}", "JPEG")
     feed.transfer_image = transfer_image
     feed.save()
@@ -88,16 +87,19 @@ class ArticlesFeedView(APIView):
     
 
     def post(self, request):
+
         
         serializer = FeedSerializer(data=request.data)
+
         
         if serializer.is_valid():
             
             serializer.save(user=request.user)
             img = serializer.data["original_image"]
             upload_category(img, serializer.data)
-            
+
             model_list = ['articles/sample/composition_vii.t7', 'articles/sample/candy.t7', 'articles/sample/feathers.t7', 'articles/sample/la_muse.t7', 'articles/sample/mosaic.t7', 'articles/sample/starry_night.t7', 'articles.sample/the_scream.t7', 'articles/sample/the_wave.t7', 'articles/sample/udnie.t7']
+
             random.shuffle(model_list)
             
             net = cv2.dnn.readNetFromTorch(model_list[0])
