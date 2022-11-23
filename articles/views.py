@@ -1,4 +1,3 @@
-
 from datetime import datetime
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -20,11 +19,13 @@ import sys
 import io
 from django.forms.models import model_to_dict
 import random
+from uuid import uuid4
+import uuid
 
 
 
-def upload_category(img, serizalizer):
-    feed = Feed.objects.get(id=serizalizer['id'])
+def upload_category(img, serializer):
+    feed = Feed.objects.get(id=serializer['id'])
     try:
         model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
         imgs = [(f'.{img}')] # batch of images
@@ -39,18 +40,21 @@ def upload_category(img, serizalizer):
 
 
 
-def transform(img, net):
-
-    data = img.read()
+def transform(img, net, serializer):
+    feed = Feed.objects.get(id=serializer['id'])
+    now = uuid.uuid4()
+    
+    data = cv2.imread((f'.{img}'))
+    
     #인코딩
     encoded_img = np.fromstring(data, dtype = np.uint8)
+    
     #다시 디코딩
     img = cv2.imdecode(encoded_img, cv2.IMREAD_COLOR)
-
     
-    h, w, c = img.shape
+    h, w, c = data.shape
     #500x500으로 크기조정
-    img = cv2.resize(img, dsize=(500, int(h / w * 500)))
+    img = cv2.resize(data, dsize=(500, int(h / w * 500)))
     #모델: 명화로 바꾸는 부분
     MEAN_VALUE = [103.939, 116.779, 123.680]
     blob = cv2.dnn.blobFromImage(img, mean=MEAN_VALUE)
@@ -64,11 +68,14 @@ def transform(img, net):
     #크기에 맞게 자르고 type을 바꿔줌
     output = np.clip(output, 0, 255)
     output = output.astype('uint8')
-    
     output = Image.fromarray(output)
-    output_io = io.BytesIO()
-    output.save(output_io, format="JPEG")
-    return output_io
+    # output_io = io.BytesIO()
+    transfer_image = f"transfer_feed_images/{feed.user.nickname}_{now}.jpg"
+    output.save(f"./media/{transfer_image}", "JPEG")
+    feed.transfer_image = transfer_image
+    feed.save()
+
+    # return output_io
 
 
 
@@ -79,36 +86,24 @@ class ArticlesFeedView(APIView):
         serializer = FeedListSerializer(articles, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-    # def post(self,request):
-    #     user = request.user
-    #     now = datetime.now()
-    #     model_list = ['articles/composition_vii.t7', 'articles/candy.t7', 'articles/feathers.t7', 'articles/la_muse.t7', 'articles/masaic.t7', 'articles/starry_night.t7', 'articles/the_scream.t7', 'articles/the_wave.t7', 'articles/udnie.t7']
-    #     random.shuffle(model_list)
-    #     output_io = transform(request.data['original_image'], net=cv2.dnn.readNetFromTorch(model_list[0]))
-        
-    #     new_pic= InMemoryUploadedFile(output_io, 'ImageField',f"{user.nickname}:{now}",'JPEG', sys.getsizeof(output_io), None)
-        
-    #     create_feeds = Feed.objects.create(
-    #         user=user,
-    #         title=request.data["title"],
-    #         content=request.data["content"],
-    #         category=request.data["category"],
-    #         original_image=new_pic,
-    #         transfer_image=new_pic,
-    #     )
-        
-    #     painting_dict = model_to_dict(create_feeds)
-    #     painting_dict['original_image'] = painting_dict['original_image'].url
-        
-    #     return Response(painting_dict, status=status.HTTP_200_OK)
 
     def post(self, request):
+        
         serializer = FeedSerializer(data=request.data)
         
         if serializer.is_valid():
+            
             serializer.save(user=request.user)
             img = serializer.data["original_image"]
             upload_category(img, serializer.data)
+            
+            model_list = ['articles/sample/composition_vii.t7', 'articles/sample/candy.t7', 'articles/sample/feathers.t7', 'articles/sample/la_muse.t7', 'articles/sample/mosaic.t7', 'articles/sample/starry_night.t7', 'articles.sample/the_scream.t7', 'articles/sample/the_wave.t7', 'articles/sample/udnie.t7']
+            random.shuffle(model_list)
+            
+            net = cv2.dnn.readNetFromTorch(model_list[0])
+            
+            transform(img, net, serializer.data)
+            
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
