@@ -61,8 +61,7 @@ class FeedListSerializer(serializers.ModelSerializer):
         model = Feed
         fields='__all__'
 
-class YourSerializer(TaggitSerializer, serializers.ModelSerializer): #테그
-
+class TagSerializer(TaggitSerializer, serializers.ModelSerializer): #테그
     tags = TagListSerializerField()
 
     class Meta:
