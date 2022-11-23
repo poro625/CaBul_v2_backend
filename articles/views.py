@@ -5,11 +5,11 @@ from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
 from rest_framework import status
 from articles import serializers
-from articles.models import Feed, Comment
+from articles.models import Feed, Comment, TaggedFeed
 from rest_framework import generics
 from rest_framework import filters
 from rest_framework import permissions
-from articles.serializers import ArticleSerializer, FeedSerializer, FeedListSerializer, FeedCommentSerializer
+from articles.serializers import ArticleSerializer, FeedSerializer, FeedListSerializer, FeedCommentSerializer, TagSerializer
 from django.db.models.query_utils import Q
 
 
@@ -105,7 +105,7 @@ class ArticlesFeedLikeView(APIView): # Feed 좋아요
             return Response("좋아요했습니다", status=status.HTTP_200_OK)
         
 
-class ArticlesSearchView(generics.ListAPIView): 
+class ArticlesSearchView(generics.ListAPIView): #검색
     queryset = Feed.objects.all()
     serializer_class = ArticleSerializer
 
@@ -113,3 +113,6 @@ class ArticlesSearchView(generics.ListAPIView):
     # 검색 키워드를 지정했을 때, 매칭을 시도할 필드
     search_fields = ["title"]
 
+class TagView(generics.ListAPIView): #테그
+    queryset = TaggedFeed.objects.all()
+    serializer_class = TagSerializer
