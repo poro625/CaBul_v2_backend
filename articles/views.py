@@ -65,7 +65,7 @@ class FeedCommentDetailView(APIView):  #댓글(수정,삭제)(성창남)
             return Response("권한이 없습니다!", status=status.HTTP_403_FORBIDDEN)     
         
 
-class ArticlesFeedDetailView(APIView):
+class ArticlesFeedDetailView(APIView): #게시글 상세조회, 수정, 삭제
     
     def get(self, request, feed_id):
         feed = get_object_or_404(Feed, id=feed_id)
@@ -116,3 +116,4 @@ class ArticlesSearchView(generics.ListAPIView): #검색
 class TagView(generics.ListAPIView): #테그
     queryset = TaggedFeed.objects.all()
     serializer_class = TagSerializer
+    
