@@ -21,11 +21,21 @@ class customRegistrationSerializer(RegisterSerializer):  # dj-rest-auth 회원�
     
     
 class UserProfileSerializer(serializers.ModelSerializer): # user 정보 상세조회 serializer
-    followee = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    # followee = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    follow_count = serializers.SerializerMethodField()
+    followee_count = serializers.SerializerMethodField()
+    # followee_count = serializers.SerializerMethodField()
+    
+    def get_follow_count(self, obj):
+        return obj.follow.count()
+    
+    def get_followee_count(self, obj):
+        return obj.followee.count()
+    
     #   프로필 조회
     class Meta:
         model = User
-        fields=("id", "name","nickname","email", "follow", "followee",)
+        fields=("id", "name","nickname","email", "follow_count", "followee_count")
 
 class UserUpdateSerializer(serializers.ModelSerializer):  # 회원정보 변경 serializer
     class Meta:
