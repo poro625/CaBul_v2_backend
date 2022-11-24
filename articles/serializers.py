@@ -3,6 +3,12 @@ from articles.models import Feed, Comment, TaggedFeed
 from taggit.serializers import (TagListSerializerField,
                                 TaggitSerializer)        #태그
 
+
+class CategorySerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Feed
+        fields=("category", )
 class CommentListSerializer(serializers.ModelSerializer): # 게시글 댓글을 보기위한 Serializer
     user = serializers.SerializerMethodField()
 
@@ -12,8 +18,6 @@ class CommentListSerializer(serializers.ModelSerializer): # 게시글 댓글을 
     class Meta:
         model = Comment
         fields='__all__'
-
-
 
         
 class FeedCommentSerializer(serializers.ModelSerializer): # 댓글 작성 serializer
@@ -32,7 +36,11 @@ class FeedCommentSerializer(serializers.ModelSerializer): # 댓글 작성 serial
         
 
 class ArticleSerializer(serializers.ModelSerializer): # 검색 기능에서 사용하는 serializer
-
+    user = serializers.SerializerMethodField()
+    
+    
+    def get_user(self, obj):
+        return obj.user.nickname
     class Meta:
         model = Feed
         fields='__all__'
@@ -55,7 +63,7 @@ class FeedDetailSerializer(serializers.ModelSerializer): #게시글 상세보기
     comments = CommentListSerializer(source = "comment_set", many=True) # 게시글관련 댓글 보기위한 Serializer 설정
     
     def get_user(self, obj):
-        return obj.user.email
+        return obj.user.nickname
     
     class Meta:
         model = Feed
@@ -64,10 +72,14 @@ class FeedDetailSerializer(serializers.ModelSerializer): #게시글 상세보기
 
 
 class FeedListSerializer(serializers.ModelSerializer): # 게시글 전체 보기 serializer
+    user = serializers.SerializerMethodField()
     like_count= serializers.SerializerMethodField()
 
     def get_like_count(self, obj):
         return obj.like.count()
+    
+    def get_user(self, obj):
+        return obj.user.nickname
 
     class Meta:
         model = Feed
