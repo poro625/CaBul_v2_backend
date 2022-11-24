@@ -12,9 +12,6 @@ import cv2
 import random
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-
-
-
 class ArticlesFeedView(APIView): # 게시글 전체보기, 등록 View
     
     permission_classes = [permissions.IsAuthenticated]
@@ -24,6 +21,17 @@ class ArticlesFeedView(APIView): # 게시글 전체보기, 등록 View
         articles = Feed.objects.all()
         serializer = FeedListSerializer(articles, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class ArticlesCategoryFeedView(APIView): # 게시글 카테고리 분류
+    
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request, feed_category): # 게시글 카테고리 분류
+        articles = Feed.objects.filter(category=feed_category)
+        serializer = FeedListSerializer(articles, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
     
 
     def post(self, request): # 게시글 등록

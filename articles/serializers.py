@@ -13,8 +13,6 @@ class CommentListSerializer(serializers.ModelSerializer): # 게시글 댓글을 
         model = Comment
         fields='__all__'
 
-
-
         
 class FeedCommentSerializer(serializers.ModelSerializer): # 댓글 작성 serializer
 
