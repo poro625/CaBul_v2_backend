@@ -19,11 +19,31 @@ class CategoryView(APIView): # 카테고리 목록 조회 View
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     
-    def get(self, request): # 게시글 전체 보기
+    def get(self, request): # 카테고리, 글 갯수 조회
 
         articles = Feed.objects.all()
         serializer = CategorySerializer(articles, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        result_set = set()
+        category_list = []
+        
+        for category in serializer.data:
+            result_set.add(category['category'])
+            
+        result_set = list(result_set)
+        for result in result_set:
+            count = 0
+            for i in serializer.data:
+                i = i['category'] 
+                if result == i:
+                    count += 1
+            category_list.append({
+                "category": result,
+                "count": count
+            })
+                
+        return Response(category_list, status=status.HTTP_200_OK)
+    
 class ArticlesCategoryFeedView(APIView): # 게시글 전체보기, 등록 View
 
     permission_classes = [permissions.IsAuthenticated]
