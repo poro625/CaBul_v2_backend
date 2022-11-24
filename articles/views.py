@@ -6,24 +6,24 @@ from articles.models import Feed, Comment, TaggedFeed
 from rest_framework import generics
 from rest_framework import filters
 from rest_framework import permissions
-from articles.serializers import ArticleSerializer, FeedSerializer, FeedListSerializer, FeedCommentSerializer, TagSerializer, FeedDetailSerializer
+from articles.serializers import ArticleSerializer, FeedSerializer, FeedListSerializer, FeedCommentSerializer, TagSerializer, FeedDetailSerializer, CategorySerializer
 from articles.deep_learning import upload_category, transform
 import cv2
 import random
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-class ArticlesFeedView(APIView): # 게시글 전체보기, 등록 View
+
+class CategoryView(APIView):
     
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     
     def get(self, request): # 게시글 전체 보기
         articles = Feed.objects.all()
-        serializer = FeedListSerializer(articles, many=True)
+        serializer = CategorySerializer(articles, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+class ArticlesCategoryFeedView(APIView): # 게시글 전체보기, 등록 View
 
-class ArticlesCategoryFeedView(APIView): # 게시글 카테고리 분류
-    
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
@@ -31,9 +31,17 @@ class ArticlesCategoryFeedView(APIView): # 게시글 카테고리 분류
         articles = Feed.objects.filter(category=feed_category)
         serializer = FeedListSerializer(articles, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    
 
+class ArticlesFeedView(APIView): # 게시글 카테고리 분류
+    
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request): # 게시글 전체 보기
+        articles = Feed.objects.all()
+        serializer = FeedListSerializer(articles, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
     def post(self, request): # 게시글 등록
         
         serializer = FeedSerializer(data=request.data)

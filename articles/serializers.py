@@ -3,6 +3,12 @@ from articles.models import Feed, Comment, TaggedFeed
 from taggit.serializers import (TagListSerializerField,
                                 TaggitSerializer)        #태그
 
+
+class CategorySerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Feed
+        fields=("category", )
 class CommentListSerializer(serializers.ModelSerializer): # 게시글 댓글을 보기위한 Serializer
     user = serializers.SerializerMethodField()
 

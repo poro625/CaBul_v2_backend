@@ -4,7 +4,8 @@ from articles import views
 
 urlpatterns = [
 
-    path('', views.ArticlesFeedView.as_view(), name ='feed_upload_view' ),                         # 게시글 업로드, 조회
+    path('', views.ArticlesFeedView.as_view(), name ='feed_upload_view' ),
+    path('category/', views.CategoryView.as_view(), name ='category_view' ),# 게시글 업로드, 조회
     path('category/<str:feed_category>/', views.ArticlesCategoryFeedView.as_view(), name ='feed_category_view' ), # 게시글 카테고리 분류
     path('<int:feed_id>/like/', views.ArticlesFeedLikeView.as_view(), name = 'feed_like_view'),    # 좋아요
     path('search/', views.ArticlesSearchView.as_view(), name = 'articles_search_view'),            # 검색
