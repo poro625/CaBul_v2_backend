@@ -13,7 +13,7 @@ import random
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
-class CategoryView(APIView):
+class CategoryView(APIView): # 카테고리 목록 조회 View
     
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication]
@@ -32,7 +32,7 @@ class ArticlesCategoryFeedView(APIView): # 게시글 전체보기, 등록 View
         serializer = FeedListSerializer(articles, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-class ArticlesFeedView(APIView): # 게시글 카테고리 분류
+class ArticlesFeedView(APIView): # 게시글 카테고리 분류 View
     
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication]
