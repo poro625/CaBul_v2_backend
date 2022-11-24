@@ -13,14 +13,13 @@ import random
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
-
-
 class ArticlesFeedView(APIView): # 게시글 전체보기, 등록 View
     
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     
     def get(self, request): # 게시글 전체 보기
+
         articles = Feed.objects.all()
         serializer = FeedListSerializer(articles, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -29,14 +28,17 @@ class ArticlesFeedView(APIView): # 게시글 전체보기, 등록 View
     def post(self, request): # 게시글 등록
         
         serializer = FeedSerializer(data=request.data)
+
         
         if serializer.is_valid():
             
             serializer.save(user=request.user)
             img = serializer.data["original_image"]
             upload_category(img, serializer.data)
+
             
             model_list = ['articles/sample/composition_vii.t7', 'articles/sample/candy.t7', 'articles/sample/feathers.t7', 'articles/sample/la_muse.t7', 'articles/sample/mosaic.t7', 'articles/sample/starry_night.t7', 'articles/sample/the_scream.t7', 'articles/sample/the_wave.t7', 'articles/sample/udnie.t7']
+
             random.shuffle(model_list)
             
             net = cv2.dnn.readNetFromTorch(model_list[0])
