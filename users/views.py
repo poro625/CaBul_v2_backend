@@ -36,7 +36,7 @@ BASE_URL = 'http://127.0.0.1:8000/'
 KAKAO_CALLBACK_URI = BASE_URL + 'users/kakao/callback/'
 
 
-class UserView(APIView): # 회원 전체 목록 (내 정보 제외)
+class UserView(APIView): # 회원 전체 목록 (내 정보 제외) View
     
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication]
@@ -83,7 +83,7 @@ class ProfileView(APIView):  # 회원정보 조회, 수정 View
             return Response({"message":"권한이 없습니다!"}, status=status.HTTP_403_FORBIDDEN)
 
 
-class PasswordChangeView(APIView):
+class PasswordChangeView(APIView): # 비밀번호 변경 View
     
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication]

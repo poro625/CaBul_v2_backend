@@ -55,7 +55,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):  # 회원정보 변경 
         return instance
 
 
-class PasswordChangeSerializer(serializers.ModelSerializer):
+class PasswordChangeSerializer(serializers.ModelSerializer): # 비밀번호 변경 serializer
     password2 = serializers.CharField(error_messages={'required':'비밀번호를 입력해주세요.', 'blank':'비밀번호를 입력해주세요.', 'write_only':True})
     
     class Meta:
