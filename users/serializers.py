@@ -2,6 +2,7 @@ from rest_framework import serializers
 from users.models import User
 from dj_rest_auth.registration.serializers import RegisterSerializer
 from django.contrib.auth.hashers import check_password
+from articles.serializers import FeedDetailSerializer
 
 import re
 
@@ -21,10 +22,10 @@ class customRegistrationSerializer(RegisterSerializer):  # dj-rest-auth 회원�
     
     
 class UserProfileSerializer(serializers.ModelSerializer): # user 정보 상세조회 serializer
-    # followee = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    followee = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     follow_count = serializers.SerializerMethodField()
     followee_count = serializers.SerializerMethodField()
-    # followee_count = serializers.SerializerMethodField()
+    feed_set = FeedDetailSerializer(many=True)
     
     def get_follow_count(self, obj):
         return obj.follow.count()
@@ -35,7 +36,7 @@ class UserProfileSerializer(serializers.ModelSerializer): # user 정보 상세�
     #   프로필 조회
     class Meta:
         model = User
-        fields=("id", "name","nickname","email", "follow_count", "followee_count")
+        fields=("id", "name","nickname","email", "follow_count", "followee_count", "last_login", "feed_set", "follow", "followee", "profile_image")
 
 class UserUpdateSerializer(serializers.ModelSerializer):  # 회원정보 변경 serializer
     class Meta:
