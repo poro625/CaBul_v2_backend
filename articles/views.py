@@ -1,18 +1,17 @@
+import cv2
+import random
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
-from rest_framework import status
-from articles.models import Feed, Comment, TaggedFeed
-from rest_framework import generics
-from rest_framework import filters
-from rest_framework import permissions
+from rest_framework import status, generics, filters, permissions
 from rest_framework.pagination import PageNumberPagination
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
+from articles.models import Feed, Comment, TaggedFeed
 from articles.pagination import PaginationHandlerMixin
 from articles.serializers import FeedSerializer, FeedListSerializer, CommentListSerializer, TagSerializer, FeedDetailSerializer, CategorySerializer
 from articles.deep_learning import upload_category, transform
-import cv2
-import random
-from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 class ItemPagination(PageNumberPagination): # pagination 상속

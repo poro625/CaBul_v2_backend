@@ -1,10 +1,13 @@
+import re
+
 from rest_framework import serializers
-from users.models import User
+
 from dj_rest_auth.registration.serializers import RegisterSerializer
 from django.contrib.auth.hashers import check_password
+
+from users.models import User
 from articles.serializers import FeedDetailSerializer
 
-import re
 
 
 class customRegistrationSerializer(RegisterSerializer):  # dj-rest-auth 회원가입 시리얼라이저

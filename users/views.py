@@ -1,37 +1,33 @@
 import os
 import requests
+
 from django.shortcuts import redirect
+from django.http import JsonResponse
+from django.http import HttpResponseRedirect
+from django.conf import settings
+
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
-from django.shortcuts import redirect
 from rest_framework.views import APIView
-from rest_framework import permissions
-from rest_framework import status
-from json import JSONDecodeError
-from django.http import JsonResponse
-from users.models import User
-from django.http import HttpResponseRedirect
-from allauth.socialaccount.models import SocialAccount
-from dj_rest_auth.registration.views import SocialLoginView
-from rest_framework.views import APIView
-from allauth.socialaccount.providers.kakao import views as kakao_view
-from allauth.socialaccount.providers.oauth2.client import OAuth2Client
-from rest_framework.permissions import AllowAny
-from allauth.account.models import EmailConfirmation, EmailConfirmationHMAC
-from users.serializers import UserProfileSerializer, UserUpdateSerializer, PasswordChangeSerializer
-from django.conf import settings
-from allauth.socialaccount.models import SocialAccount
-from allauth.socialaccount.providers.kakao import views as kakao_view
-from dj_rest_auth.registration.views import SocialLoginView
-from allauth.socialaccount.providers.oauth2.client import OAuth2Client
-from django.http import JsonResponse
-import requests
+from rest_framework import permissions, status
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework import status
-from json.decoder import JSONDecodeError
-import os
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import api_view
+from rest_framework.permissions import AllowAny
+
+from dj_rest_auth.registration.views import SocialLoginView
+
+from allauth.socialaccount.providers.kakao import views as kakao_view
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+from allauth.account.models import EmailConfirmation, EmailConfirmationHMAC
+from allauth.socialaccount.models import SocialAccount
+
+from json import JSONDecodeError
+from json.decoder import JSONDecodeError
+
+from users.models import User
+from users.serializers import UserProfileSerializer, UserUpdateSerializer, PasswordChangeSerializer
+
 
 BASE_URL = 'http://127.0.0.1:8000/'
 KAKAO_CALLBACK_URI = BASE_URL + 'users/kakao/callback/'
