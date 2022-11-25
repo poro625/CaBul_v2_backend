@@ -28,7 +28,8 @@ class UserProfileSerializer(serializers.ModelSerializer): # user 정보 상세�
     followee = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     follow_count = serializers.SerializerMethodField()
     followee_count = serializers.SerializerMethodField()
-    feed_set = FeedDetailSerializer(many=True)
+    feed_set = FeedDetailSerializer(many=True, read_only=True)
+    feed_set_count = serializers.SerializerMethodField()
     
     def get_follow_count(self, obj):
         return obj.follow.count()
@@ -36,10 +37,13 @@ class UserProfileSerializer(serializers.ModelSerializer): # user 정보 상세�
     def get_followee_count(self, obj):
         return obj.followee.count()
     
+    def get_feed_set_count(self, obj):
+        return obj.feed_set.count()
+    
     #   프로필 조회
     class Meta:
         model = User
-        fields=("id", "name","nickname","email", "follow_count", "followee_count", "last_login", "feed_set", "follow", "followee", "profile_image")
+        fields=("id", "name","nickname","email", "follow_count", "followee_count", "last_login", "feed_set", "follow", "followee", "profile_image", "feed_set", "feed_set_count")
 
 class UserUpdateSerializer(serializers.ModelSerializer):  # 회원정보 변경 serializer
     class Meta:
