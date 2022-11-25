@@ -26,6 +26,7 @@ from dj_rest_auth.registration.views import SocialLoginView
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from django.http import JsonResponse
 import requests
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status
 from json.decoder import JSONDecodeError
 import os
@@ -219,3 +220,44 @@ class KakaoLogin(SocialLoginView):
     adapter_class = kakao_view.KakaoOAuth2Adapter
     client_class = OAuth2Client
     callback_url = KAKAO_CALLBACK_URI
+
+# class KakaoLoginView(APIView):
+
+#     def post(self, request):
+#         email = request.data.get("email")
+#         nickname = request.data.get("nickname")
+
+#         try:
+#             # 기존에 가입된 유저와 쿼리해서 존재하면서, socialaccount에도 존재하면 로그인
+#             user = User.objects.get(email=email)
+#             social_user = SocialAccount.objects.filter(user=user).first()
+            
+#             # 로그인
+#             if social_user:
+#                 # 소셜계정이 카카오가 아닌 다른 소셜계정으로 가입한 유저일때(구글, 네이버)
+#                 if social_user.provider != "kakao":
+#                     return Response({"error": "카카오로 가입한 유저가 아닙니다."}, status=status.HTTP_400_BAD_REQUEST)
+                
+#                 refresh = RefreshToken.for_user(user)
+#                 return Response({'refresh': str(refresh), 'access': str(refresh.access_token), "msg" : "로그인 성공"}, status=status.HTTP_200_OK)
+            
+#             # 동일한 이메일의 유저가 있지만, social계정이 아닐때 
+#             if social_user is None:
+#                 return Response({"error": "이메일이 존재하지만, 소셜유저가 아닙니다."}, status=status.HTTP_400_BAD_REQUEST)
+            
+#         except User.DoesNotExist:
+#             # 기존에 가입된 유저가 없으면 새로 가입
+#             new_user = User.objects.create(
+#                 nickname=nickname,
+#                 email=email,
+#             )
+#             #소셜account에도 생성
+#             SocialAccount.objects.create(
+#                 user_id=new_user.id,
+#                 uid=new_user.email,
+#                 provider="kakao",
+#             )
+
+#             refresh = RefreshToken.for_user(new_user)
+                
+#             return Response({'refresh': str(refresh), 'access': str(refresh.access_token), "msg" : "회원가입 성공"}, status=status.HTTP_201_CREATED)

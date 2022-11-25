@@ -66,7 +66,6 @@ class ArticlesFeedView(APIView, PaginationHandlerMixin):  # 게시글 전체보�
 
     def get(self, request): # 게시글 전체 보기
         articles = Feed.objects.all()
-        # serializer = FeedListSerializer(articles, many=True)
         
         
         page = self.paginate_queryset(articles)
@@ -74,9 +73,8 @@ class ArticlesFeedView(APIView, PaginationHandlerMixin):  # 게시글 전체보�
         if page is not None:
             serializer = self.get_paginated_response(FeedListSerializer(page, many=True, context={"request": request}).data)
         else:
-            item_serializer = FeedListSerializer(articles, many=True, context={"request": request})
+            serializer = FeedListSerializer(articles, many=True, context={"request": request})
             
-        
         data = {
             'articles': serializer.data
         }
@@ -84,8 +82,6 @@ class ArticlesFeedView(APIView, PaginationHandlerMixin):  # 게시글 전체보�
         return Response(data, status=status.HTTP_200_OK)
         
         
-        
-        return Response(serializer.data, status=status.HTTP_200_OK)
     
     def post(self, request): # 게시글 등록
         

@@ -10,6 +10,7 @@ urlpatterns = [
     path('dj-rest-auth/', include('dj_rest_auth.urls')),  # 로그인 및 기타 dj-rest-auth 기능 url
     path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')), #회원가입 dj-rest-auth url
     path('follow/<int:user_id>/', views.FollowView.as_view(),name='follow_view'), # follow url
+    # path('api/kakao/', views.KakaoLoginView.as_view(), name='kakao_login'),
     path('kakao/login/', views.kakao_login, name='kakao_login'), # 카카오 소셜로그인 url
     path('kakao/callback/', views.kakao_callback, name='kakao_callback'),# 카카오 소셜로그인 url
     path('kakao/login/finish/', views.KakaoLogin.as_view(), name='kakao_login_todjango'),# 카카오 소셜로그인 url
