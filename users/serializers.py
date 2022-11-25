@@ -28,8 +28,12 @@ class UserProfileSerializer(serializers.ModelSerializer): # user 정보 상세�
     followee = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     follow_count = serializers.SerializerMethodField()
     followee_count = serializers.SerializerMethodField()
-    feed_set = FeedDetailSerializer(many=True, read_only=True)
     feed_set_count = serializers.SerializerMethodField()
+    feed_set = serializers.SerializerMethodField()
+    
+    def get_feed_set(self, instance):
+        feeds = instance.feed_set.all().order_by('-created_at')
+        return FeedDetailSerializer(feeds, many=True).data
     
     def get_follow_count(self, obj):
         return obj.follow.count()
