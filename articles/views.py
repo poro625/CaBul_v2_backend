@@ -15,7 +15,7 @@ from articles.deep_learning import upload_category, transform
 
 
 class ItemPagination(PageNumberPagination): # pagination 상속
-    page_size = 4
+    page_size = 12
 
 class CategoryView(APIView): # 카테고리 목록 조회 View
 
