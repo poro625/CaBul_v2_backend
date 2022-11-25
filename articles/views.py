@@ -6,12 +6,17 @@ from articles.models import Feed, Comment, TaggedFeed
 from rest_framework import generics
 from rest_framework import filters
 from rest_framework import permissions
+from rest_framework.pagination import PageNumberPagination
+from articles.pagination import PaginationHandlerMixin
 from articles.serializers import FeedSerializer, FeedListSerializer, CommentListSerializer, TagSerializer, FeedDetailSerializer, CategorySerializer
 from articles.deep_learning import upload_category, transform
 import cv2
 import random
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
+
+class ItemPagination(PageNumberPagination): # pagination 상속
+    page_size = 4
 
 class CategoryView(APIView): # 카테고리 목록 조회 View
 
@@ -53,14 +58,33 @@ class ArticlesCategoryFeedView(APIView): # 게시글 카테고리 분류 View
         serializer = FeedListSerializer(articles, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-class ArticlesFeedView(APIView):  # 게시글 전체보기, 등록 View
+class ArticlesFeedView(APIView, PaginationHandlerMixin):  # 게시글 전체보기, 등록 View
     
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication]
+    pagination_class = ItemPagination
 
     def get(self, request): # 게시글 전체 보기
         articles = Feed.objects.all()
-        serializer = FeedListSerializer(articles, many=True)
+        # serializer = FeedListSerializer(articles, many=True)
+        
+        
+        page = self.paginate_queryset(articles)
+        
+        if page is not None:
+            serializer = self.get_paginated_response(FeedListSerializer(page, many=True, context={"request": request}).data)
+        else:
+            item_serializer = FeedListSerializer(articles, many=True, context={"request": request})
+            
+        
+        data = {
+            'articles': serializer.data
+        }
+        
+        return Response(data, status=status.HTTP_200_OK)
+        
+        
+        
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def post(self, request): # 게시글 등록
