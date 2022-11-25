@@ -35,7 +35,7 @@ class UserProfileSerializer(serializers.ModelSerializer): # user 정보 상세�
     #   프로필 조회
     class Meta:
         model = User
-        fields=("id", "name","nickname","email", "follow_count", "followee_count")
+        fields=("id", "name","nickname","email", "follow_count", "followee_count", "last_login")
 
 class UserUpdateSerializer(serializers.ModelSerializer):  # 회원정보 변경 serializer
     class Meta:
