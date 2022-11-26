@@ -4,6 +4,7 @@ from taggit.serializers import (TagListSerializerField,
                                 TaggitSerializer)        #태그
 
 
+
 class CategorySerializer(serializers.ModelSerializer): # .카테고리 조회 Serializer
     class Meta:
         model = Feed
@@ -67,10 +68,3 @@ class FeedListSerializer(serializers.ModelSerializer): # 게시글 전체 보기
     class Meta:
         model = Feed
         fields = ("pk", "user", "like_count", "content", "title", "transfer_image", "created_at", "updated_at", "category", "user_id")
-
-class TagSerializer(TaggitSerializer, serializers.ModelSerializer): #태그
-    tags = TagListSerializerField()
-
-    class Meta:
-        model = TaggedFeed
-        fields = '__all__'
