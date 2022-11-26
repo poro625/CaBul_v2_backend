@@ -64,7 +64,7 @@ class ArticlesFeedView(APIView, PaginationHandlerMixin):  # 게시글 전체보�
     pagination_class = ItemPagination
 
     def get(self, request): # 게시글 전체 보기
-        articles = Feed.objects.all()
+        articles = Feed.objects.all().order_by('-created_at')
         
         
         page = self.paginate_queryset(articles)
