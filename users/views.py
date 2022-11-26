@@ -39,7 +39,7 @@ KAKAO_CALLBACK_URI = BASE_URL + 'users/kakao/callback/'
 
 
 class ItemPagination(PageNumberPagination): # pagination 상속
-    page_size = 3
+    page_size = 12
 
 class UserView(APIView): # 회원 전체 목록 (내 정보 제외) View
     
