@@ -2,6 +2,7 @@ from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
 from users.models import User
+import re
 
 class UserRegistrationTest(APITestCase):
     def test_registration(self):  #회원가입 성공 테스트
@@ -52,13 +53,47 @@ class UserRegistrationTest(APITestCase):
             }
         response = self.client.post(url, user_data)  
         self.assertEqual(response.status_code, 400)
+    
+    def test_verify_email(self):
+    # Verify email address
+        username = 'userTest'
+        payload = {
+            'email': 'test@example.com',
+            'password1': 'TestpassUltra1',
+            'password2': 'TestpassUltra1',
+            'username': username,
+        }
+        response = self.client.post(REGISTER_USER_URL, payload)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        user = get_user_model().objects.get(email='test@example.com')
+
+        # Get token from email
+        token_regex = r"registration\/account-confirm-email\/([A-Za-z0-9:\-]+)\/"
+        email_content = django.core.mail.outbox[0].body
+        match = re.search(token_regex, email_content)
+        assert match.groups(), "Could not find the token in the email" # You might want to use some other way to raise an error for this
+        token = match.group(1)
+
+        # Verify 
+        response = self.client.post(VERIFY_USER_URL, {'key': token})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
-class LoginUserTest(APITestCase): # 로그인 성공 테스트 
+class LoginUserTest(APITestCase): # 로그인 실패 테스트 
     def setUp(self):  # DB 셋업
-        self.data = {'email': 'test@naver.com', 'password': 'password123@', 'is_active':'1'}
+        self.data = {'email': 'test@naver.com', 'password': 'password123@'} 
         self.user = User.objects.create_user('test@naver.com', 'password123@')
         
-    def test_login_failed(self):   # 로그인 성공 테스트 
+    def test_login_failed(self):   # 로그인 실패 테스트 
         response = self.client.post(reverse('rest_login'), self.data)
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 400) 
+
+
+# class LoginUserFailedTest(APITestCase): # 로그인 실패 테스트 
+#     def setUp(self):  # DB 셋업
+#         self.data = {'email': 'test@naver.com', 'password': 'password123@', 'is_active':'1'} # 실제로는 이메일 인증을 거치지 않으면 is_active가 비활성화 되어있음.
+#         self.user = User.objects.create_user('test@naver.com', 'password1234@') # 비밀번호가 틀렸을때 테스트
+        
+#     def test_login_failed(self):   # 로그인 성공 테스트 
+#         response = self.client.post(reverse('rest_login'), self.data)
+#         self.assertEqual(response.status_code, 400) 
