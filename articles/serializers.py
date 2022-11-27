@@ -48,7 +48,7 @@ class FeedDetailSerializer(serializers.ModelSerializer): #게시글 상세보기
     
     class Meta:
         model = Feed
-        fields = ("pk", "user", "comments", "like_count", "content", "title", "transfer_image", "created_at", "updated_at", "category", "user_id")
+        fields = ("pk", "user", "comments", "like_count", "content", "title", "transfer_image", "created_at", "updated_at", "category", "user_id", "like")
 
 
 
